@@ -56,6 +56,11 @@
   <div id="map"></div>
 </main>
 <script>
+// http.server prints "http://[::]:8501/" - browsers treat that listen-all address as a
+// separate origin that is blocked from calling the API, so switch to localhost.
+if (["[::]", "::", "0.0.0.0"].includes(location.hostname)) {
+  location.replace(location.href.replace(/\/\/(\[::\]|0\.0\.0\.0)/, "//localhost"));
+}
 const $ = s => document.querySelector(s);
 const params = new URLSearchParams(location.search);
 // Default API host: same machine the page was opened from. "[::]" / "0.0.0.0" are
