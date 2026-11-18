@@ -1,0 +1,13 @@
+{
+ "selected_model": "XGBoost",
+ "rule": "max CV top-1 accuracy, tie-break min CV log loss",
+ "ranking": [
+  "XGBoost",
+  "RandomForest",
+  "LightGBM",
+  "MLP",
+  "LogisticRegression",
+  "KNN",
+  "GaussianNB"
+ ]
+}

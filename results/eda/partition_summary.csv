@@ -1,0 +1,17 @@
+,student_test,train
+trips,10.0,80.0
+points_total,19160.0,208417.0
+points_median,1420.0,1529.0
+points_min,262.0,361.0
+points_max,3958.0,19313.0
+nodes_median,6596.5,9608.0
+arcs_median,13145.0,19526.5
+route_arcs_median,250.0,280.0
+missing_values,0.0,0.0
+duration_median_s,1809.5,1710.0014999999999
+frac_dt_1s_mean,0.9819896936551981,0.9383341170217598
+gaps_gt_10s,27.0,590.0
+isolated_nodes,0.0,0.0
+weak_components_median,11.0,20.0
+route_continuity_mean,0.9997319034852546,0.9993461551444497
+gps_route_dist_median,4.515910925673673,4.563818397185758

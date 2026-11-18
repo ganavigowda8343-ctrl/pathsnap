@@ -1,0 +1,45 @@
+tuning trips: ['00000008', '00000010', '00000019', '00000036', '00000047', '00000053', '00000062', '00000070', '00000074', '00000079', '00000083', '00000086', '00000088', '00000093', '00000097', '00000098']
+{'beta': 1.0, 'emission_weight': 0.25, 'top1': np.float64(0.9128358208955224), 'seconds': 3.2706539630889893}
+{'beta': 1.0, 'emission_weight': 0.5, 'top1': np.float64(0.9214498933901919), 'seconds': 2.3216500282287598}
+{'beta': 1.0, 'emission_weight': 1.0, 'top1': np.float64(0.9226723525230988), 'seconds': 2.3223161697387695}
+{'beta': 1.0, 'emission_weight': 2.0, 'top1': np.float64(0.9223027718550106), 'seconds': 2.317439079284668}
+{'beta': 2.0, 'emission_weight': 0.25, 'top1': np.float64(0.9214498933901919), 'seconds': 2.312739133834839}
+{'beta': 2.0, 'emission_weight': 0.5, 'top1': np.float64(0.9226723525230988), 'seconds': 2.324336051940918}
+{'beta': 2.0, 'emission_weight': 1.0, 'top1': np.float64(0.9223027718550106), 'seconds': 2.3266570568084717}
+{'beta': 2.0, 'emission_weight': 2.0, 'top1': np.float64(0.9236389481165601), 'seconds': 2.318617105484009}
+{'beta': 3.0, 'emission_weight': 0.25, 'top1': np.float64(0.9210803127221038), 'seconds': 2.3251049518585205}
+{'beta': 3.0, 'emission_weight': 0.5, 'top1': np.float64(0.9227576403695806), 'seconds': 2.3284049034118652}
+{'beta': 3.0, 'emission_weight': 1.0, 'top1': np.float64(0.9224449182658138), 'seconds': 2.416084051132202}
+{'beta': 3.0, 'emission_weight': 2.0, 'top1': np.float64(0.9211656005685857), 'seconds': 2.3293581008911133}
+{'beta': 6.0, 'emission_weight': 0.25, 'top1': np.float64(0.9227576403695806), 'seconds': 2.332336902618408}
+{'beta': 6.0, 'emission_weight': 0.5, 'top1': np.float64(0.9224449182658138), 'seconds': 2.326671838760376}
+{'beta': 6.0, 'emission_weight': 1.0, 'top1': np.float64(0.9211656005685857), 'seconds': 2.3508200645446777}
+{'beta': 6.0, 'emission_weight': 2.0, 'top1': np.float64(0.9211656005685857), 'seconds': 2.320819854736328}
+{'beta': 12.0, 'emission_weight': 0.25, 'top1': np.float64(0.9224449182658138), 'seconds': 2.3227970600128174}
+{'beta': 12.0, 'emission_weight': 0.5, 'top1': np.float64(0.9211656005685857), 'seconds': 2.368798017501831}
+{'beta': 12.0, 'emission_weight': 1.0, 'top1': np.float64(0.9211656005685857), 'seconds': 2.348336935043335}
+{'beta': 12.0, 'emission_weight': 2.0, 'top1': np.float64(0.9149964463397299), 'seconds': 2.3263440132141113}
+{'beta': 25.0, 'emission_weight': 0.25, 'top1': np.float64(0.9209381663113007), 'seconds': 2.3221309185028076}
+{'beta': 25.0, 'emission_weight': 0.5, 'top1': np.float64(0.920682302771855), 'seconds': 2.326042890548706}
+{'beta': 25.0, 'emission_weight': 1.0, 'top1': np.float64(0.9148542999289268), 'seconds': 2.3268401622772217}
+{'beta': 25.0, 'emission_weight': 2.0, 'top1': np.float64(0.9114427860696518), 'seconds': 2.3380789756774902}
+{'beta': 50.0, 'emission_weight': 0.25, 'top1': np.float64(0.920682302771855), 'seconds': 2.322427272796631}
+{'beta': 50.0, 'emission_weight': 0.5, 'top1': np.float64(0.9148542999289268), 'seconds': 2.329063892364502}
+{'beta': 50.0, 'emission_weight': 1.0, 'top1': np.float64(0.9114427860696518), 'seconds': 2.3298439979553223}
+{'beta': 50.0, 'emission_weight': 2.0, 'top1': np.float64(0.9100497512437811), 'seconds': 2.325514078140259}
+selected decoder config: HMMConfig(beta=2.0, emission_weight=2.0, max_gap_s=60.0, max_jump_m=1500.0, search_slack_m=150.0, same_arc_back_tol_m=15.0)
+00000000 clf=0.9529 hmm=0.9656 cont 0.984->0.995
+00000007 clf=0.9276 hmm=0.9542 cont 0.999->1.000
+00000009 clf=0.8875 hmm=0.9190 cont 0.917->0.946
+00000040 clf=0.9549 hmm=0.9743 cont 0.978->0.996
+00000052 clf=0.9733 hmm=1.0000 cont 0.935->0.962
+00000056 clf=0.9166 hmm=0.9575 cont 0.926->0.966
+00000065 clf=0.8711 hmm=0.8919 cont 0.969->0.984
+00000076 clf=0.9253 hmm=0.9704 cont 0.930->0.973
+00000077 clf=0.7760 hmm=0.8530 cont 0.959->0.994
+00000091 clf=0.9062 hmm=0.9485 cont 0.936->0.970
+                         top1_accuracy  route_continuity  route_precision  route_recall  route_f1  top1_pointwise_pooled
+method                                                                                                                  
+classifier+HMM                  0.9434            0.9785           0.9587        0.9025    0.9282                 0.9361
+classifier+HMM+gap-fill         0.9434            0.9990           0.9448        0.9920    0.9673                 0.9361
+classifier-only                 0.9091            0.9532           0.9091        0.8937    0.8991                 0.8970

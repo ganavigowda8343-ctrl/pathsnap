@@ -1,0 +1,18 @@
+# Full environment (training + API). Python 3.12.
+# macOS: LightGBM/XGBoost need OpenMP ->  brew install libomp
+numpy==2.5.5
+pandas==3.1.1
+scipy==1.18.1
+scikit-learn==1.9.1
+lightgbm==4.7.0
+xgboost==3.4.1
+optuna==5.1.0
+pyproj==3.8.0
+pyarrow==26.0.1
+joblib==1.6.0
+matplotlib==3.11.2
+folium==1.0.0
+tabulate==0.10.0
+fastapi==0.163.2
+pydantic==2.14.3
+uvicorn[standard]==0.54.0

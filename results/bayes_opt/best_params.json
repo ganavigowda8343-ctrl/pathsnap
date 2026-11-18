@@ -1,0 +1,18 @@
+{
+ "model": "XGBoost",
+ "deployed_version": "tuned",
+ "best_params": {
+  "n_estimators": 600,
+  "learning_rate": 0.010183118534701437,
+  "max_depth": 10,
+  "min_child_weight": 3.7330172351611166,
+  "subsample": 0.5870149168191312,
+  "colsample_bytree": 0.8816281777575882,
+  "reg_lambda": 0.7447791758105672
+ },
+ "best_cv3_top1": 0.8905465068555237,
+ "untuned_cv3_top1": 0.8901682815564285,
+ "n_trials": 30,
+ "optimisation_seconds": 1602.7450268268585,
+ "objective": "mean 3-fold GroupKFold top-1 accuracy (train only)"
+}

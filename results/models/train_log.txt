@@ -1,0 +1,67 @@
+train rows=1,251,618 trips=78 (excluded ['00000033', '00000054']); student_test rows=140,736
+
+=== LogisticRegression (Linear / probabilistic)
+  fold 0: top1=0.8553 f1=0.9048 ll=0.1373 (2s)
+  fold 1: top1=0.9064 f1=0.9350 ll=0.0916 (2s)
+  fold 2: top1=0.8886 f1=0.9256 ll=0.0913 (2s)
+  fold 3: top1=0.8860 f1=0.9216 ll=0.1216 (2s)
+  fold 4: top1=0.8564 f1=0.9098 ll=0.1184 (3s)
+  student_test: top1=0.8711 f1=0.9159 ll=0.1042 cont=0.9454
+
+=== GaussianNB (Probabilistic (generative))
+  fold 0: top1=0.8422 f1=0.8118 ll=0.8721 (0s)
+  fold 1: top1=0.8878 f1=0.7904 ll=0.7683 (0s)
+  fold 2: top1=0.8685 f1=0.7832 ll=0.7297 (0s)
+  fold 3: top1=0.8643 f1=0.7895 ll=1.1445 (0s)
+  fold 4: top1=0.8465 f1=0.7946 ll=0.8462 (0s)
+  student_test: top1=0.8582 f1=0.7900 ll=0.8308 cont=0.9329
+
+=== KNN (Instance-based)
+  fold 0: top1=0.8411 f1=0.8986 ll=0.1773 (0s)
+  fold 1: top1=0.8984 f1=0.9319 ll=0.1020 (0s)
+  fold 2: top1=0.8829 f1=0.9223 ll=0.1013 (0s)
+  fold 3: top1=0.8781 f1=0.9174 ll=0.1714 (0s)
+  fold 4: top1=0.8501 f1=0.9093 ll=0.1356 (0s)
+  student_test: top1=0.8678 f1=0.9154 ll=0.1182 cont=0.9396
+
+=== RandomForest (Ensemble (bagging))
+  fold 0: top1=0.8634 f1=0.9171 ll=0.1119 (80s)
+  fold 1: top1=0.9207 f1=0.9523 ll=0.0630 (66s)
+  fold 2: top1=0.9067 f1=0.9444 ll=0.0670 (73s)
+  fold 3: top1=0.8990 f1=0.9354 ll=0.0978 (64s)
+  fold 4: top1=0.8678 f1=0.9228 ll=0.0914 (64s)
+  student_test: top1=0.8931 f1=0.9353 ll=0.0776 cont=0.9525
+
+=== LightGBM (Boosting)
+  fold 0: top1=0.8614 f1=0.9168 ll=0.1198 (16s)
+  fold 1: top1=0.9234 f1=0.9535 ll=0.0611 (14s)
+  fold 2: top1=0.9057 f1=0.9441 ll=0.0657 (14s)
+  fold 3: top1=0.8941 f1=0.9331 ll=0.1106 (15s)
+  fold 4: top1=0.8670 f1=0.9233 ll=0.0911 (14s)
+  student_test: top1=0.8967 f1=0.9374 ll=0.0798 cont=0.9464
+
+=== XGBoost (Boosting)
+  fold 0: top1=0.8629 f1=0.9176 ll=0.1118 (15s)
+  fold 1: top1=0.9227 f1=0.9538 ll=0.0608 (13s)
+  fold 2: top1=0.9074 f1=0.9448 ll=0.0650 (14s)
+  fold 3: top1=0.8967 f1=0.9344 ll=0.0994 (13s)
+  fold 4: top1=0.8681 f1=0.9239 ll=0.0904 (14s)
+  student_test: top1=0.8984 f1=0.9349 ll=0.0745 cont=0.9531
+
+=== MLP (Neural network)
+  fold 0: top1=0.8600 f1=0.9142 ll=0.1171 (13s)
+  fold 1: top1=0.9140 f1=0.9458 ll=0.0699 (10s)
+  fold 2: top1=0.9044 f1=0.9415 ll=0.0703 (11s)
+  fold 3: top1=0.8890 f1=0.9275 ll=0.1110 (14s)
+  fold 4: top1=0.8634 f1=0.9170 ll=0.0963 (13s)
+  student_test: top1=0.8842 f1=0.9290 ll=0.0841 cont=0.9514
+
+Ranking by CV top-1: ['XGBoost', 'RandomForest', 'LightGBM', 'MLP', 'LogisticRegression', 'KNN', 'GaussianNB'] -> selected: XGBoost
+                model                      family  cv_top1_mean  cv_top1_std  cv_f1_macro_mean  cv_f1_macro_std  cv_log_loss_mean  cv_continuity_mean  test_accuracy  test_precision_macro  test_recall_macro  test_f1_macro  test_log_loss  test_top1  test_continuity  test_route_f1  train_time_s  infer_time_s  infer_ms_per_1k_obs
+0  LogisticRegression      Linear / probabilistic        0.8785       0.0221            0.9193           0.0122            0.1120              0.9309         0.9600                0.9111             0.9209         0.9159         0.1042     0.8711           0.9454         0.8904        2.8681        0.0266               0.0014
+1          GaussianNB  Probabilistic (generative)        0.8619       0.0183            0.7939           0.0108            0.8722              0.9141         0.8674                0.7493             0.9055         0.7900         0.8308     0.8582           0.9329         0.8615        0.1974        0.0191               0.0010
+2                 KNN              Instance-based        0.8701       0.0238            0.9159           0.0127            0.1375              0.9265         0.9602                0.9144             0.9164         0.9154         0.1182     0.8678           0.9396         0.8751        0.0141        8.3530               0.4365
+3        RandomForest          Ensemble (bagging)        0.8915       0.0250            0.9344           0.0146            0.0862              0.9435         0.9699                0.9395             0.9313         0.9353         0.0776     0.8931           0.9525         0.8975      106.8901        0.7454               0.0390
+4            LightGBM                    Boosting        0.8903       0.0261            0.9342           0.0149            0.0897              0.9404         0.9708                0.9395             0.9354         0.9374         0.0798     0.8967           0.9464         0.8960       16.0461        0.8862               0.0463
+5             XGBoost                    Boosting        0.8916       0.0256            0.9349           0.0148            0.0855              0.9448         0.9697                0.9388             0.9310         0.9349         0.0745     0.8984           0.9531         0.9011       15.9062        0.1760               0.0092
+6                 MLP              Neural network        0.8862       0.0241            0.9292           0.0142            0.0929              0.9429         0.9673                0.9373             0.9211         0.9290         0.0841     0.8842           0.9514         0.8945       16.9288        0.0423               0.0022

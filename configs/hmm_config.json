@@ -1,0 +1,8 @@
+{
+ "beta": 2.0,
+ "emission_weight": 2.0,
+ "max_gap_s": 60.0,
+ "max_jump_m": 1500.0,
+ "search_slack_m": 150.0,
+ "same_arc_back_tol_m": 15.0
+}
