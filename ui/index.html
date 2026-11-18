@@ -58,8 +58,12 @@
 <script>
 const $ = s => document.querySelector(s);
 const params = new URLSearchParams(location.search);
+// Default API host: same machine the page was opened from. "[::]" / "0.0.0.0" are
+// listen-all addresses printed by http.server, not reachable hosts -> use localhost.
+const pageHost = ["", "[::]", "::", "0.0.0.0"].includes(location.hostname) ? "localhost" : location.hostname;
 let API = params.get("api") || (()=>{ try { return localStorage.getItem("pathsnap_api"); } catch(e){ return null; } })()
-          || `http://${location.hostname || "localhost"}:8000`;
+          || `http://${pageHost}:8000`;
+if (/\/\/(\[::\]|0\.0\.0\.0)(:|\/|$)/.test(API)) API = API.replace(/\[::\]|0\.0\.0\.0/, "localhost");
 $("#apiUrl").value = API;
 
 const map = L.map("map", { preferCanvas: true }).setView([30, 10], 2);
