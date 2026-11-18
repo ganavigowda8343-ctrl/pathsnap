@@ -1,0 +1,8 @@
+logistic_regression        0.0 MB  (3s)
+gaussian_nb                0.0 MB  (0s)
+knn                        3.0 MB  (0s)
+random_forest             48.7 MB  (95s)
+lightgbm                   1.3 MB  (16s)
+xgboost                    1.1 MB  (17s)
+mlp                        0.0 MB  (17s)
+large files kept local only: none

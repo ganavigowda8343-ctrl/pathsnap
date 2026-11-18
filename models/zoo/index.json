@@ -1,0 +1,160 @@
+[
+ {
+  "id": "xgboost_tuned",
+  "name": "XGBoost (Bayesian-tuned) - deployed",
+  "family": "Boosting",
+  "default": true,
+  "config": {
+   "n_estimators": 600,
+   "learning_rate": 0.010183118534701437,
+   "max_depth": 10,
+   "min_child_weight": 3.7330172351611166,
+   "subsample": 0.5870149168191312,
+   "colsample_bytree": 0.8816281777575882,
+   "reg_lambda": 0.7447791758105672
+  },
+  "offline": {
+   "cv_top1": null,
+   "test_top1": 0.8969427750195976,
+   "test_f1_macro": 0.9381673474107124,
+   "test_log_loss": 0.0738602802157402
+  }
+ },
+ {
+  "id": "logistic_regression",
+  "name": "LogisticRegression",
+  "family": "Linear / probabilistic",
+  "default": false,
+  "config": {
+   "C": 1.0,
+   "penalty": "l2",
+   "scaler": "standard"
+  },
+  "size_mb": 0.0,
+  "offline": {
+   "cv_top1": 0.8785492926641563,
+   "test_top1": 0.8711262085184217,
+   "test_f1_macro": 0.915879821693607,
+   "test_log_loss": 0.1042490229010582
+  }
+ },
+ {
+  "id": "gaussian_nb",
+  "name": "GaussianNB",
+  "family": "Probabilistic (generative)",
+  "default": false,
+  "config": {
+   "var_smoothing": 1e-09
+  },
+  "size_mb": 0.0,
+  "offline": {
+   "cv_top1": 0.8618742163050479,
+   "test_top1": 0.8582179252678338,
+   "test_f1_macro": 0.789968522733068,
+   "test_log_loss": 0.830790638923645
+  }
+ },
+ {
+  "id": "knn",
+  "name": "KNN",
+  "family": "Instance-based",
+  "default": false,
+  "config": {
+   "n_neighbors": 50,
+   "weights": "distance",
+   "scaler": "standard",
+   "train_rows": 80000
+  },
+  "size_mb": 3.0,
+  "offline": {
+   "cv_top1": 0.8701028535403188,
+   "test_top1": 0.8677815521296054,
+   "test_f1_macro": 0.9153945401105537,
+   "test_log_loss": 0.11818855634699008
+  }
+ },
+ {
+  "id": "random_forest",
+  "name": "RandomForest",
+  "family": "Ensemble (bagging)",
+  "default": false,
+  "config": {
+   "n_estimators": 200,
+   "min_samples_leaf": 5,
+   "max_features": "sqrt",
+   "max_samples": 0.3
+  },
+  "size_mb": 48.7,
+  "offline": {
+   "cv_top1": 0.8915383688154093,
+   "test_top1": 0.8930755160700288,
+   "test_f1_macro": 0.9353264166343352,
+   "test_log_loss": 0.07757123184498882
+  }
+ },
+ {
+  "id": "lightgbm",
+  "name": "LightGBM",
+  "family": "Boosting",
+  "default": false,
+  "config": {
+   "n_estimators": 400,
+   "learning_rate": 0.05,
+   "num_leaves": 63,
+   "subsample": 0.8,
+   "colsample_bytree": 0.8
+  },
+  "size_mb": 1.3,
+  "offline": {
+   "cv_top1": 0.8903270342472942,
+   "test_top1": 0.8967337339952965,
+   "test_f1_macro": 0.9374364833048653,
+   "test_log_loss": 0.07978011260680636
+  }
+ },
+ {
+  "id": "xgboost",
+  "name": "XGBoost",
+  "family": "Boosting",
+  "default": false,
+  "config": {
+   "n_estimators": 400,
+   "learning_rate": 0.05,
+   "max_depth": 7,
+   "subsample": 0.8,
+   "colsample_bytree": 0.8
+  },
+  "size_mb": 1.1,
+  "offline": {
+   "cv_top1": 0.8915517779977817,
+   "test_top1": 0.8984060621897048,
+   "test_f1_macro": 0.9348804346166517,
+   "test_log_loss": 0.07454189658164978
+  }
+ },
+ {
+  "id": "mlp",
+  "name": "MLP",
+  "family": "Neural network",
+  "default": false,
+  "config": {
+   "hidden_layer_sizes": [
+    64,
+    32
+   ],
+   "activation": "relu",
+   "alpha": 0.0001,
+   "batch_size": 512,
+   "max_iter": 60,
+   "early_stopping": true,
+   "train_rows": 400000
+  },
+  "size_mb": 0.0,
+  "offline": {
+   "cv_top1": 0.886155842708634,
+   "test_top1": 0.8841912725372354,
+   "test_f1_macro": 0.9289908828676883,
+   "test_log_loss": 0.08408503234386444
+  }
+ }
+]

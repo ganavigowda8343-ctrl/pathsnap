@@ -30,6 +30,7 @@ raw trip ──► projection ──► candidate arcs ──► features ──
 | `scripts/05_hmm.py` | Tunes the decoder on training OOF predictions; compares classifier-only and HMM; trip maps |
 | `scripts/06_collect_results.py` | Collects every result table into `results/RESULTS_SUMMARY.md` |
 | `scripts/07_report_assets.py` | Train/CV/test fit diagnostics, feature importance, extra EDA figures |
+| `scripts/08_export_model_zoo.py` | Refits all 7 compared models and saves them to `models/zoo/` so the API can serve any of them |
 | `report/` | Technical report (`report.html` → `PathSnap_Report.pdf` via `build_pdf.sh`) and its screenshots |
 | `docs/VIVA_PREP.md` | Viva preparation: likely questions and answers, with pointers to the code |
 | `api/main.py` | FastAPI backend (Laptop 1) |
@@ -104,7 +105,15 @@ API endpoints:
 |---|---|---|
 | GET | `/health` | Model name, decoder configuration and the trip source being served |
 | GET | `/trips` | Trip IDs and point counts (no labels) |
-| POST | `/predict` | Body `{"trip_id": "..."}`. Returns GPS points, predicted route polylines, metrics and timings |
+| GET | `/models` | Every selectable model (all 7 compared models + the deployed tuned XGBoost) with its offline CV/student-test scores |
+| POST | `/predict` | Body `{"trip_id": "...", "model": "<id>", "use_hmm": true}`. `model` and `use_hmm` are optional; the default is the deployed tuned XGBoost with the HMM, which is what the UI calls. Returns GPS points, predicted route polylines, metrics and timings |
+| POST | `/compare` | Body `{"trip_id": "...", "use_hmm": true}`. Runs every model on one trip (features computed once) and returns a ranked table of server-side metrics |
+
+Model IDs: `xgboost_tuned` (default), `xgboost`, `lightgbm`, `random_forest`, `mlp`,
+`logistic_regression`, `gaussian_nb`, `knn`. The files live in `models/zoo/` and are
+produced by `scripts/08_export_model_zoo.py`. The evaluator can try any model from the
+browser at `http://<LAPTOP1_IP>:8000/docs` (Swagger UI → *Try it out*). The HMM
+parameters were tuned for the deployed XGBoost and are reused unchanged for the other models.
 
 ## Leakage controls
 
