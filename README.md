@@ -31,6 +31,7 @@ raw trip ──► projection ──► candidate arcs ──► features ──
 | `scripts/06_collect_results.py` | Collects every result table into `results/RESULTS_SUMMARY.md` |
 | `scripts/07_report_assets.py` | Train/CV/test fit diagnostics, feature importance, extra EDA figures |
 | `scripts/08_export_model_zoo.py` | Refits all 7 compared models and saves them to `models/zoo/` so the API can serve any of them |
+| `scripts/09_evaluator_run.py` | Evaluation day only: runs the deployed pipeline on the evaluator trips → `results/evaluator/` + maps (inference only, nothing is tuned) |
 | `report/` | Technical report (`report.html` → `PathSnap_Report.pdf` via `build_pdf.sh`) and its screenshots |
 | `docs/VIVA_PREP.md` | Viva preparation: likely questions and answers, with pointers to the code |
 | `api/main.py` | FastAPI backend (Laptop 1) |

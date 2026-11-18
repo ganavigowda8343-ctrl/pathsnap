@@ -1,0 +1,16 @@
+{
+ "model": "XGBoost (tuned)",
+ "n_trips": 10,
+ "n_points": 19674,
+ "n_labelled": 19673,
+ "mean_top1_classifier_only": 0.9175946411428599,
+ "mean_top1_hmm": 0.9506628171505203,
+ "pooled_top1_classifier_only": 0.865043460580491,
+ "pooled_top1_hmm": 0.9432216743760484,
+ "mean_route_f1": 0.9358595307712056,
+ "mean_route_precision": 0.8948088713020151,
+ "mean_route_recall": 0.9920705985805075,
+ "mean_route_continuity": 1.0,
+ "seconds_min": 0.08946633338928223,
+ "seconds_max": 0.7883870601654053
+}

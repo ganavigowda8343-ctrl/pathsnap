@@ -395,6 +395,8 @@ The best final state is traced back through ψ. Scores are re-normalised at ever
   <tr><td>00000087</td><td class="n">1,399</td><td class="n">0.9557</td><td class="n">0.9964</td><td class="n">0.9989</td></tr>
   <tr><td>00000094</td><td class="n">3,230</td><td class="n">0.9325</td><td class="n">0.9492</td><td class="n">0.9805</td></tr>
 </table>
+<p class="note">Source: <code>scripts/09_evaluator_run.py</code> → <code>results/evaluator/evaluator_results.csv</code> and <code>summary.json</code>. The script runs the same deployed pipeline as the API; the interactive maps are in <code>results/maps/evaluator_*.html</code>.</p>
+<figure><img src="figures/map_evaluator_00000015.png"><figcaption>Fig. 7.0 – Evaluator trip 00000015 (Folium): GPS (blue), reference route (green) and the HMM-reconstructed route (red); legend shows classifier-only Top-1 0.705 vs HMM 0.902.</figcaption></figure>
 <figure>
   <img src="figures/laptop2_ui_evaluation.png" onerror="this.outerHTML='<div class=&quot;placeholder&quot;>SCREENSHOT PENDING: Laptop 2 browser showing the UI connected to Laptop 1 (Source: evaluation, one trip open)<br>(file: report/figures/laptop2_ui_evaluation.png)</div>'">
   <figcaption>Fig. 7.1 – Evaluator UI running on Laptop 2, connected to the API on Laptop 1 and showing one of the 10 evaluator trips with server-computed metrics.</figcaption>
@@ -443,7 +445,7 @@ The best final state is traced back through ψ. Scores are re-normalised at ever
 <h3>8.4 Reproducibility</h3>
 <div class="formula">pip install -r requirements.txt   (macOS: brew install libomp)<br>
 python scripts/01_eda.py; python scripts/02_build_features.py; python scripts/03_train_models.py<br>
-python scripts/04_bayes_opt.py 30; python scripts/05_hmm.py; python scripts/06_collect_results.py; python scripts/07_report_assets.py</div>
+python scripts/04_bayes_opt.py 30; python scripts/05_hmm.py; python scripts/06_collect_results.py; python scripts/07_report_assets.py<br>python scripts/08_export_model_zoo.py; python scripts/09_evaluator_run.py   (evaluation day only)</div>
 
 </body>
 </html>
