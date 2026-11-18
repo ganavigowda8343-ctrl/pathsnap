@@ -91,14 +91,22 @@ PATHSNAP_EVAL_DIR=/path/to/evaluator_test uvicorn api.main:app --host 0.0.0.0 --
 **Laptop 2: UI**
 
 ```bash
-cd ui
-python3 -m http.server 8501
+python3 ui/serve.py            # http://0.0.0.0:8501
 ```
 
+`ui/serve.py` serves the page and also proxies OpenStreetMap tiles through
+`/tiles/{z}/{x}/{y}.png`. This matters on campus networks: the browser does not trust
+the TLS-inspection certificate, so public CDNs and HTTPS tile servers fail with
+`ERR_CERT_AUTHORITY_INVALID`. Leaflet itself is vendored in `ui/vendor/leaflet` (no
+CDN needed); the tile proxy fetches tiles server-side and caches them under
+`$TMPDIR/pathsnap_tiles`. Plain `python3 -m http.server` also works, but the map
+background stays blank.
+
 Open `http://localhost:8501/?api=http://<LAPTOP1_IP>:8000`, or type the API URL in the
-header and press **Connect**. The page lists the evaluation trips. Clicking one sends
-its ID to `POST /predict` and draws the GPS points and the predicted route, along with
-the accuracy that the API computed on the server.
+header and press **Connect**. The page lists the evaluation trips. Clicking one runs
+`POST /compare` (all models ranked), then `POST /predict` for the best model, and draws
+the GPS points and the predicted route, along with the accuracy that the API computed
+on the server.
 
 API endpoints:
 

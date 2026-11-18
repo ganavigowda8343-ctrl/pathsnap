@@ -4,5 +4,7 @@ __pycache__/
 .DS_Store
 # raw data is provided by the organisers - not committed
 data/
+/data
 data_cache/
+.playwright-mcp/
 .ipynb_checkpoints/

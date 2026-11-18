@@ -1,140 +1,458 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PathSnap Evaluator</title>
-<!-- Leaflet 1.9.4 bundled locally (ui/vendor/leaflet) so the UI works on networks that block CDNs -->
-<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
-<script src="vendor/leaflet/leaflet.js"></script>
-<style>
-  :root { --bg:#f6f7f9; --panel:#fff; --text:#1d2330; --muted:#6b7280; --line:#e3e6eb;
-          --accent:#d32f2f; --gps:#1565c0; --ok:#2e7d32; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--text); }
-  header { display:flex; align-items:center; gap:16px; padding:12px 20px; background:var(--panel); border-bottom:1px solid var(--line); flex-wrap:wrap; }
-  header h1 { font-size:18px; margin:0; }
-  header .sub { color:var(--muted); font-size:13px; }
-  .api { margin-left:auto; display:flex; gap:6px; align-items:center; font-size:13px; }
-  .api input { width:230px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; }
-  button { cursor:pointer; border:1px solid var(--line); background:var(--panel); border-radius:6px; padding:6px 10px; font-size:13px; }
-  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
-  main { display:grid; grid-template-columns: 300px 1fr; height: calc(100vh - 58px); }
-  aside { background:var(--panel); border-right:1px solid var(--line); overflow:auto; padding:14px; }
-  aside h2 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:6px 0 10px; }
-  .trip { display:flex; justify-content:space-between; width:100%; text-align:left; margin-bottom:6px; padding:9px 10px; }
-  .trip.active { border-color:var(--accent); background:#fdecec; }
-  .trip small { color:var(--muted); }
-  #source { font-size:12px; color:var(--muted); margin-bottom:10px; }
-  #status { font-size:12px; color:var(--muted); margin:8px 0; min-height:16px; }
-  .metrics { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
-  .card { border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
-  .card .v { font-size:20px; font-weight:600; font-variant-numeric: tabular-nums; }
-  .card .k { font-size:11px; color:var(--muted); }
-  .card.big { grid-column: span 2; }
-  #map { height:100%; }
-  .legend { background:#fff; padding:8px 10px; border-radius:6px; font-size:12px; line-height:1.6; box-shadow:0 1px 4px rgba(0,0,0,.2); }
-  .sw { display:inline-block; width:14px; height:4px; vertical-align:middle; margin-right:6px; }
-  table.t { width:100%; font-size:12px; border-collapse:collapse; margin-top:10px; }
-  table.t td { padding:3px 0; border-bottom:1px solid var(--line); }
-  table.t td:last-child { text-align:right; font-variant-numeric: tabular-nums; }
-  @media (max-width: 760px) { main { grid-template-columns:1fr; height:auto; } #map { height:60vh; } .api { margin-left:0; } }
-</style>
-</head>
-<body>
-<header>
-  <h1>PathSnap</h1><span class="sub">Map-matching &amp; route reconstruction — evaluator console</span>
-  <div class="api">API <input id="apiUrl" placeholder="http://LAPTOP1_IP:8000"><button id="connect">Connect</button></div>
-</header>
-<main>
-  <aside>
-    <h2>Evaluation trips</h2>
-    <div id="source" class="sub"></div>
-    <div id="trips"></div>
-    <div id="status"></div>
-    <div id="result"></div>
-  </aside>
-  <div id="map"></div>
-</main>
-<script>
-// http.server prints "http://[::]:8501/" - browsers treat that listen-all address as a
-// separate origin that is blocked from calling the API, so switch to localhost.
-if (["[::]", "::", "0.0.0.0"].includes(location.hostname)) {
-  location.replace(location.href.replace(/\/\/(\[::\]|0\.0\.0\.0)/, "//localhost"));
-}
-const $ = s => document.querySelector(s);
-const params = new URLSearchParams(location.search);
-// Default API host: same machine the page was opened from. "[::]" / "0.0.0.0" are
-// listen-all addresses printed by http.server, not reachable hosts -> use localhost.
-const pageHost = ["", "[::]", "::", "0.0.0.0"].includes(location.hostname) ? "localhost" : location.hostname;
-let API = params.get("api") || (()=>{ try { return localStorage.getItem("pathsnap_api"); } catch(e){ return null; } })()
-          || `http://${pageHost}:8000`;
-if (/\/\/(\[::\]|0\.0\.0\.0)(:|\/|$)/.test(API)) API = API.replace(/\[::\]|0\.0\.0\.0/, "localhost");
-$("#apiUrl").value = API;
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PathSnap Evaluator</title>
+    <link rel="icon" href="data:," />
+    <!-- Leaflet is vendored locally: the campus network blocks/breaks public CDNs. -->
+    <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+    <script src="vendor/leaflet/leaflet.js"></script>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --panel: #fff;
+        --text: #1d2330;
+        --muted: #6b7280;
+        --line: #e3e6eb;
+        --accent: #d32f2f;
+        --gps: #1565c0;
+        --ok: #2e7d32;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 20px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      header .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .api {
+        margin-left: auto;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-size: 13px;
+      }
+      .api input {
+        width: 230px;
+        padding: 6px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      button {
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+      button.primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      main {
+        display: grid;
+        grid-template-columns: 330px 1fr;
+        height: calc(100vh - 58px);
+      }
+      aside {
+        background: var(--panel);
+        border-right: 1px solid var(--line);
+        overflow: auto;
+        padding: 14px;
+      }
+      aside h2 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin: 6px 0 10px;
+      }
+      .trip {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 6px;
+        padding: 9px 10px;
+      }
+      .trip.active {
+        border-color: var(--accent);
+        background: #fdecec;
+      }
+      .trip small {
+        color: var(--muted);
+      }
+      #source {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      #status {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 8px 0;
+        min-height: 16px;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .card .v {
+        font-size: 20px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .card .k {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .card.big {
+        grid-column: span 2;
+      }
+      #map {
+        height: 100%;
+      }
+      .legend {
+        background: #fff;
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        line-height: 1.6;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      }
+      .sw {
+        display: inline-block;
+        width: 14px;
+        height: 4px;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      table.t {
+        width: 100%;
+        font-size: 12px;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      table.t td {
+        padding: 3px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      table.t td:last-child {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      table.cmp {
+        margin-top: 4px;
+      }
+      table.cmp th {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        font-weight: 600;
+        text-align: left;
+        padding: 0 0 5px;
+        border-bottom: 1px solid var(--line);
+      }
+      table.cmp th:not(:first-child),
+      table.cmp td:not(:first-child) {
+        text-align: right;
+        padding-left: 8px;
+      }
+      table.cmp tbody tr.sel td {
+        color: var(--ok);
+        font-weight: 600;
+        background: #f1f8f1;
+      }
+      .cmp-note {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.45;
+        margin-top: 7px;
+      }
+      @media (max-width: 760px) {
+        main {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+        #map {
+          height: 60vh;
+        }
+        .api {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PathSnap</h1>
+      <span class="sub"
+        >Map-matching &amp; route reconstruction — evaluator console</span
+      >
+      <div class="api">
+        API <input id="apiUrl" placeholder="http://LAPTOP1_IP:8000" /><button
+          id="connect"
+        >
+          Connect
+        </button>
+      </div>
+    </header>
+    <main>
+      <aside>
+        <h2>Evaluation trips</h2>
+        <div id="source" class="sub"></div>
+        <div id="trips"></div>
+        <div id="status"></div>
+        <div id="result"></div>
+        <div id="compareWrap" hidden>
+          <h2 id="compareTitle">Trip comparison</h2>
+          <div id="compare"></div>
+        </div>
+      </aside>
+      <div id="map"></div>
+    </main>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const params = new URLSearchParams(location.search);
+      let API =
+        params.get("api") ||
+        (() => {
+          try {
+            return localStorage.getItem("pathsnap_api");
+          } catch (e) {
+            return null;
+          }
+        })() ||
+        `http://10.30.202.47:8000`;
+      $("#apiUrl").value = API;
 
-const map = L.map("map", { preferCanvas: true }).setView([30, 10], 2);
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-  { attribution: "&copy; OpenStreetMap contributors", maxZoom: 19 }).addTo(map);
-const gpsLayer = L.layerGroup().addTo(map), routeLayer = L.layerGroup().addTo(map);
-L.control.layers(null, { "Raw GPS observations": gpsLayer, "Predicted route (HMM)": routeLayer }, { collapsed:false }).addTo(map);
-const legend = L.control({ position: "bottomleft" });
-legend.onAdd = () => { const d = L.DomUtil.create("div", "legend");
-  d.innerHTML = `<div><span class="sw" style="background:var(--gps);height:8px;width:8px;border-radius:50%"></span>GPS observation</div>
-                 <div><span class="sw" style="background:var(--accent)"></span>Predicted route</div>`; return d; };
-legend.addTo(map);
+      const map = L.map("map", { preferCanvas: true }).setView([30, 10], 2);
+      // Tiles are proxied by the local UI server (see ui/serve.py) because the
+      // browser does not trust the campus TLS-inspection certificate.
+      L.tileLayer("/tiles/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 19,
+      }).addTo(map);
+      const gpsLayer = L.layerGroup().addTo(map),
+        routeLayer = L.layerGroup().addTo(map);
+      L.control
+        .layers(
+          null,
+          {
+            "Raw GPS observations": gpsLayer,
+            "Predicted route (HMM)": routeLayer,
+          },
+          { collapsed: false },
+        )
+        .addTo(map);
+      const legend = L.control({ position: "bottomleft" });
+      legend.onAdd = () => {
+        const d = L.DomUtil.create("div", "legend");
+        d.innerHTML = `<div><span class="sw" style="background:var(--gps);height:8px;width:8px;border-radius:50%"></span>GPS observation</div>
+                 <div><span class="sw" style="background:var(--accent)"></span>Predicted route</div>`;
+        return d;
+      };
+      legend.addTo(map);
 
-function setStatus(t) { $("#status").textContent = t; }
-const pct = v => (v === null || v === undefined || Number.isNaN(v)) ? "–" : (100*v).toFixed(2) + "%";
+      function setStatus(t) {
+        $("#status").textContent = t;
+      }
+      const pct = (v) =>
+        v === null || v === undefined || Number.isNaN(v)
+          ? "–"
+          : (100 * v).toFixed(2) + "%";
 
-async function loadTrips() {
-  API = $("#apiUrl").value.replace(/\/$/, "");
-  try { localStorage.setItem("pathsnap_api", API); } catch(e) {}
-  setStatus("Connecting to " + API + " …");
-  try {
-    const r = await fetch(API + "/trips"); if (!r.ok) throw new Error(r.status);
-    const data = await r.json();
-    $("#source").textContent = "Source: " + data.source;
-    $("#trips").innerHTML = "";
-    data.trips.forEach(t => {
-      const b = document.createElement("button"); b.className = "trip";
-      b.innerHTML = `<span>Trip ${t.trip_id}</span><small>${t.n_points} pts</small>`;
-      b.onclick = () => runTrip(t.trip_id, b);
-      $("#trips").appendChild(b);
-    });
-    setStatus(`${data.trips.length} trips available. Select one to run.`);
-    // optional deep link: ?trip=<id> runs that trip immediately
-    const want = params.get("trip");
-    const idx = data.trips.findIndex(t => t.trip_id === want);
-    if (idx >= 0) runTrip(want, document.querySelectorAll(".trip")[idx]);
-  } catch (e) { setStatus("Could not reach API: " + e.message); }
-}
+      let runSeq = 0;
 
-async function runTrip(id, btn) {
-  document.querySelectorAll(".trip").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  setStatus(`Sending trip ${id} to API …`); $("#result").innerHTML = "";
-  const t0 = performance.now();
-  try {
-    const r = await fetch(API + "/predict", { method:"POST", headers:{ "Content-Type":"application/json" },
-                                             body: JSON.stringify({ trip_id: id }) });
-    if (!r.ok) throw new Error(r.status + " " + await r.text());
-    const d = await r.json();
-    draw(d); showMetrics(d, (performance.now() - t0) / 1000);
-    setStatus(`Trip ${id} processed by API.`);
-  } catch (e) { setStatus("Error: " + e.message); }
-}
+      function modelLabel(m) {
+        const id = m.id || m.model_id;
+        return id === "xgboost_tuned" ? "XGBoost (tuned)" : m.name || id;
+      }
 
-function draw(d) {
-  gpsLayer.clearLayers(); routeLayer.clearLayers();
-  d.gps_points.forEach(p => L.circleMarker(p, { radius:2.5, color:"#1565c0", weight:1, fillOpacity:.8 }).addTo(gpsLayer));
-  d.predicted_route.forEach(line => L.polyline(line, { color:"#d32f2f", weight:4, opacity:.85 }).addTo(routeLayer));
-  const all = d.gps_points.concat(...d.predicted_route);
-  if (all.length) map.fitBounds(L.latLngBounds(all), { padding:[20,20] });
-}
+      function syncApi() {
+        API = $("#apiUrl").value.replace(/\/$/, "");
+        try {
+          localStorage.setItem("pathsnap_api", API);
+        } catch (e) {}
+        return API;
+      }
 
-function showMetrics(d, rtt) {
-  const m = d.metrics;
-  $("#result").innerHTML = `
+      async function postJson(path, body) {
+        const r = await fetch(API + path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!r.ok) throw new Error(r.status + " " + (await r.text()));
+        return r.json();
+      }
+
+      async function loadTrips() {
+        syncApi();
+        setStatus("Connecting to " + API + " …");
+        try {
+          const r = await fetch(API + "/trips");
+          if (!r.ok) throw new Error(r.status);
+          const data = await r.json();
+          $("#source").textContent = "Source: " + data.source;
+          $("#trips").innerHTML = "";
+          data.trips.forEach((t) => {
+            const b = document.createElement("button");
+            b.className = "trip";
+            b.innerHTML = `<span>Trip ${t.trip_id}</span><small>${t.n_points} pts</small>`;
+            b.onclick = () => runTrip(t.trip_id, b);
+            $("#trips").appendChild(b);
+          });
+          setStatus(`${data.trips.length} trips available. Select one to run.`);
+        } catch (e) {
+          setStatus("Could not reach API: " + e.message);
+        }
+      }
+
+      async function runTrip(id, btn) {
+        document
+          .querySelectorAll(".trip")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const seq = ++runSeq;
+        $("#result").innerHTML = "";
+        $("#compareWrap").hidden = true;
+        setStatus(`Comparing all models on trip ${id} …`);
+
+        let best = null;
+        try {
+          const cmp = await postJson("/compare", {
+            trip_id: id,
+            use_hmm: true,
+          });
+          if (seq !== runSeq) return;
+          const models = (cmp.models || [])
+            .filter((m) => m.available !== false)
+            .slice()
+            .sort(
+              (a, b) =>
+                (b.top1_accuracy_hmm ?? -1) - (a.top1_accuracy_hmm ?? -1),
+            );
+          best = models[0] || null;
+          renderCompare(cmp, best);
+        } catch (e) {
+          if (seq !== runSeq) return;
+          $("#compareTitle").textContent = `Trip ${id} · all models`;
+          $("#compare").innerHTML =
+            `<div class="cmp-note">Could not compare models for this trip (${e.message}).</div>`;
+          $("#compareWrap").hidden = false;
+        }
+        if (seq !== runSeq) return;
+
+        const body = { trip_id: id, use_hmm: true };
+        if (best) body.model = best.model_id;
+        setStatus(
+          `Drawing best route${best ? ` (${modelLabel(best)})` : ""} …`,
+        );
+        const t0 = performance.now();
+        try {
+          const d = await postJson("/predict", body);
+          if (seq !== runSeq) return;
+          draw(d);
+          showMetrics(d, (performance.now() - t0) / 1000);
+          setStatus(
+            `Trip ${id} · ${d.model}${best ? ` · ${pct(best.top1_accuracy_hmm)} top-1` : ""}.`,
+          );
+        } catch (e) {
+          if (seq === runSeq) setStatus("Error: " + e.message);
+        }
+      }
+
+      function renderCompare(d, best) {
+        const models = (d.models || [])
+          .filter((m) => m.available !== false)
+          .slice()
+          .sort(
+            (a, b) => (b.top1_accuracy_hmm ?? -1) - (a.top1_accuracy_hmm ?? -1),
+          );
+        const rows = models
+          .map(
+            (
+              m,
+            ) => `<tr class="${best && m.model_id === best.model_id ? "sel" : ""}" title="${m.family} — classifier-only ${pct(m.top1_accuracy_classifier_only)}">
+      <td>${modelLabel(m)}</td>
+      <td>${pct(m.top1_accuracy_hmm)}</td>
+      <td>${pct(m.route_f1)}</td>
+    </tr>`,
+          )
+          .join("");
+        $("#compareTitle").textContent = `Trip ${d.trip_id} · all models`;
+        $("#compare").innerHTML = `
+    <table class="t cmp">
+      <thead><tr><th>Model</th><th>HMM top-1</th><th>Route F1</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="cmp-note">
+      Ranked by HMM top-1${best ? ` — best: <b>${modelLabel(best)}</b> (${pct(best.top1_accuracy_hmm)})` : ""}, drawn on the map.
+    </div>`;
+        $("#compareWrap").hidden = false;
+      }
+
+      function draw(d) {
+        gpsLayer.clearLayers();
+        routeLayer.clearLayers();
+        d.gps_points.forEach((p) =>
+          L.circleMarker(p, {
+            radius: 2.5,
+            color: "#1565c0",
+            weight: 1,
+            fillOpacity: 0.8,
+          }).addTo(gpsLayer),
+        );
+        d.predicted_route.forEach((line) =>
+          L.polyline(line, {
+            color: "#d32f2f",
+            weight: 4,
+            opacity: 0.85,
+          }).addTo(routeLayer),
+        );
+        const all = d.gps_points.concat(...d.predicted_route);
+        if (all.length)
+          map.fitBounds(L.latLngBounds(all), { padding: [20, 20] });
+      }
+
+      function showMetrics(d, rtt) {
+        const m = d.metrics;
+        $("#result").innerHTML = `
   <div class="metrics">
     <div class="card big"><div class="k">Point-level Top-1 accuracy (classifier + HMM)</div><div class="v">${pct(m.top1_accuracy_hmm)}</div></div>
     <div class="card"><div class="k">Classifier-only Top-1</div><div class="v">${pct(m.top1_accuracy_classifier_only)}</div></div>
@@ -152,11 +470,20 @@ function showMetrics(d, rtt) {
     <tr><td>Server pipeline time</td><td>${d.timings_s.total_s.toFixed(2)} s</td></tr>
     <tr><td>Round trip</td><td>${rtt.toFixed(2)} s</td></tr>
   </table>`;
-}
+      }
 
-$("#connect").onclick = loadTrips;
-$("#apiUrl").addEventListener("keydown", e => { if (e.key === "Enter") loadTrips(); });
-loadTrips();
-</script>
-</body>
+      function connect() {
+        runSeq++;
+        $("#result").innerHTML = "";
+        $("#compareWrap").hidden = true;
+        loadTrips();
+      }
+
+      $("#connect").onclick = connect;
+      $("#apiUrl").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") connect();
+      });
+      connect();
+    </script>
+  </body>
 </html>
