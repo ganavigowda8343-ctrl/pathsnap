@@ -101,6 +101,10 @@ async function loadTrips() {
       $("#trips").appendChild(b);
     });
     setStatus(`${data.trips.length} trips available. Select one to run.`);
+    // optional deep link: ?trip=<id> runs that trip immediately
+    const want = params.get("trip");
+    const idx = data.trips.findIndex(t => t.trip_id === want);
+    if (idx >= 0) runTrip(want, document.querySelectorAll(".trip")[idx]);
   } catch (e) { setStatus("Could not reach API: " + e.message); }
 }
 

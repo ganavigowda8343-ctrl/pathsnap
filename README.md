@@ -28,6 +28,10 @@ raw trip ──► projection ──► candidate arcs ──► features ──
 | `scripts/03_train_models.py` | Trains and compares 7 models (GroupKFold CV + student-test evaluation) |
 | `scripts/04_bayes_opt.py` | Optuna TPE optimisation of the selected model, exports the final model, out-of-fold predictions |
 | `scripts/05_hmm.py` | Tunes the decoder on training OOF predictions; compares classifier-only and HMM; trip maps |
+| `scripts/06_collect_results.py` | Collects every result table into `results/RESULTS_SUMMARY.md` |
+| `scripts/07_report_assets.py` | Train/CV/test fit diagnostics, feature importance, extra EDA figures |
+| `report/` | Technical report (`report.html` → `PathSnap_Report.pdf` via `build_pdf.sh`) and its screenshots |
+| `docs/VIVA_PREP.md` | Viva preparation: likely questions and answers, with pointers to the code |
 | `api/main.py` | FastAPI backend (Laptop 1) |
 | `ui/index.html` | Evaluator UI (Laptop 2): static page using Leaflet |
 | `models/final_model.joblib` | Exported classifier and feature list |

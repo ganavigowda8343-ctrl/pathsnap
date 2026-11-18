@@ -1,0 +1,18 @@
+dist_minus_min        0.4477
+abs_heading_deg       0.2079
+dist_rank             0.0878
+cos_heading           0.0737
+ctx_mean_minus_min    0.0478
+beyond_m              0.0377
+ctx_rank              0.0324
+has_reverse           0.0148
+n_cand                0.0068
+in_deg                0.0055
+dtype: float64
+LogisticRegression {'train_top1': 0.8788, 'train_f1_macro': 0.9199, 'train_log_loss': 0.1109, 'cv_top1': np.float64(0.8785), 'cv_f1_macro': np.float64(0.9193), 'cv_log_loss': np.float64(0.112), 'test_top1': np.float64(0.8711), 'test_f1_macro': np.float64(0.9159), 'test_log_loss': np.float64(0.1042), 'gap_train_minus_cv_top1': np.float64(0.0002)}
+GaussianNB {'train_top1': 0.8619, 'train_f1_macro': 0.7935, 'train_log_loss': 0.8796, 'cv_top1': np.float64(0.8619), 'cv_f1_macro': np.float64(0.7939), 'cv_log_loss': np.float64(0.8722), 'test_top1': np.float64(0.8582), 'test_f1_macro': np.float64(0.79), 'test_log_loss': np.float64(0.8308), 'gap_train_minus_cv_top1': np.float64(0.0)}
+KNN {'train_top1': 0.8874, 'train_f1_macro': 0.9267, 'train_log_loss': 0.1048, 'cv_top1': np.float64(0.8701), 'cv_f1_macro': np.float64(0.9159), 'cv_log_loss': np.float64(0.1375), 'test_top1': np.float64(0.8678), 'test_f1_macro': np.float64(0.9154), 'test_log_loss': np.float64(0.1182), 'gap_train_minus_cv_top1': np.float64(0.0173)}
+RandomForest {'train_top1': 0.9228, 'train_f1_macro': 0.9523, 'train_log_loss': 0.0586, 'cv_top1': np.float64(0.8915), 'cv_f1_macro': np.float64(0.9344), 'cv_log_loss': np.float64(0.0862), 'test_top1': np.float64(0.8931), 'test_f1_macro': np.float64(0.9353), 'test_log_loss': np.float64(0.0776), 'gap_train_minus_cv_top1': np.float64(0.0313)}
+LightGBM {'train_top1': 0.9275, 'train_f1_macro': 0.9547, 'train_log_loss': 0.0573, 'cv_top1': np.float64(0.8903), 'cv_f1_macro': np.float64(0.9342), 'cv_log_loss': np.float64(0.0897), 'test_top1': np.float64(0.8967), 'test_f1_macro': np.float64(0.9374), 'test_log_loss': np.float64(0.0798), 'gap_train_minus_cv_top1': np.float64(0.0372)}
+XGBoost {'train_top1': 0.9267, 'train_f1_macro': 0.9552, 'train_log_loss': 0.0581, 'cv_top1': np.float64(0.8916), 'cv_f1_macro': np.float64(0.9349), 'cv_log_loss': np.float64(0.0855), 'test_top1': np.float64(0.8984), 'test_f1_macro': np.float64(0.9349), 'test_log_loss': np.float64(0.0745), 'gap_train_minus_cv_top1': np.float64(0.0352)}
+MLP {'train_top1': 0.9021, 'train_f1_macro': 0.9392, 'train_log_loss': 0.0771, 'cv_top1': np.float64(0.8862), 'cv_f1_macro': np.float64(0.9292), 'cv_log_loss': np.float64(0.0929), 'test_top1': np.float64(0.8842), 'test_f1_macro': np.float64(0.929), 'test_log_loss': np.float64(0.0841), 'gap_train_minus_cv_top1': np.float64(0.0159)}
