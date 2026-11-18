@@ -44,11 +44,12 @@
   <h1>PathSnap: Distributed Map-Matching &amp; Route Reconstruction</h1>
   <div class="sub">Technical Report</div>
   <table>
-    <tr><th>Team members (SRN – name)</th><td>PES1UG24CS707 – Ganavi S<br>PES1UG24CS705 – Aadarsh Reddy Yedhala<br>PES1UG24CS686 – Puneeth V<br>PES1UG24CS685 – Preksha C M</td></tr>
+    <tr><th>Team members (SRN – name)</th><td>PES1UG24CS707 – Ganavi S<br>PES1UG24CS706 – Aadarsh Reddy Yedhala<br>PES1UG24CS686 – Puneeth V<br>PES1UG24CS685 – Preksha C M</td></tr>
     <tr><th>Section</th><td>L</td></tr>
     <tr><th>GitHub repository</th><td>https://github.com/ganavigowda8343-ctrl/pathsnap</td></tr>
     <tr><th>Final system</th><td>XGBoost candidate classifier (Bayesian-tuned) + HMM/Viterbi decoder + shortest-path gap filling</td></tr>
     <tr><th>Headline result (10 student-test trips)</th><td>Top-1 accuracy 0.897 (classifier only) → <b>0.936</b> (with HMM); route F1 <b>0.967</b>; route continuity <b>0.999</b></td></tr>
+    <tr><th>Evaluation day (10 evaluator trips)</th><td>Top-1 accuracy 0.918 (classifier only) → <b>0.951</b> (with HMM), mean over trips; route F1 <b>0.936</b>; route continuity <b>1.000</b></td></tr>
   </table>
   <p class="note" style="margin-top:10mm">All numbers in this report come from the CSV/JSON files written by the scripts in the repository
   (<code>results/</code>) and can be reproduced with <code>scripts/01_eda.py</code> … <code>scripts/07_report_assets.py</code> (seed 42).</p>
