@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PathSnap Evaluator</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Leaflet 1.9.4 bundled locally (ui/vendor/leaflet) so the UI works on networks that block CDNs -->
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<script src="vendor/leaflet/leaflet.js"></script>
 <style>
   :root { --bg:#f6f7f9; --panel:#fff; --text:#1d2330; --muted:#6b7280; --line:#e3e6eb;
           --accent:#d32f2f; --gps:#1565c0; --ok:#2e7d32; }
