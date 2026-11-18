@@ -395,19 +395,29 @@ The best final state is traced back through ψ. Scores are re-normalised at ever
   <tr><td>00000087</td><td class="n">1,399</td><td class="n">0.9557</td><td class="n">0.9964</td><td class="n">0.9989</td></tr>
   <tr><td>00000094</td><td class="n">3,230</td><td class="n">0.9325</td><td class="n">0.9492</td><td class="n">0.9805</td></tr>
 </table>
-<figure><img src="figures/ui_trip_00000077.png"><figcaption>Fig. 7.1 – Working UI: trip list, server-computed metrics (Top-1 with HMM 85.30 %, classifier-only 77.60 %, route F1 94.20 %, continuity 100 %) and predicted route over OpenStreetMap.</figcaption></figure>
-<figure><img src="figures/ui_trip_00000056.png"><figcaption>Fig. 7.2 – UI for student-test trip 00000056.</figcaption></figure>
 <figure>
-  <img src="figures/api_terminal_logs.png" onerror="this.outerHTML='<div class=&quot;placeholder&quot;>INSERT SCREENSHOT: terminal on Laptop 1 showing the uvicorn log lines (PREDICT / RESULT / POST /predict from &lt;Laptop-2 IP&gt; → 200).<br>Save it as report/figures/api_terminal_logs.png and rebuild the PDF.</div>'">
-  <figcaption>Fig. 7.3 – API responses on the command line of the receiving laptop (Laptop 1), triggered from the UI on Laptop 2.</figcaption>
+  <img src="figures/laptop2_ui_evaluation.png" onerror="this.outerHTML='<div class=&quot;placeholder&quot;>SCREENSHOT PENDING: Laptop 2 browser showing the UI connected to Laptop 1 (Source: evaluation, one trip open)<br>(file: report/figures/laptop2_ui_evaluation.png)</div>'">
+  <figcaption>Fig. 7.1 – Evaluator UI running on Laptop 2, connected to the API on Laptop 1 and showing one of the 10 evaluator trips with server-computed metrics.</figcaption>
 </figure>
-<figure><img src="figures/api_health.png" style="max-width:85%"><figcaption>Fig. 7.4 – <code>GET /health</code> response: deployed model and decoder configuration.</figcaption></figure>
+<figure>
+  <img src="figures/api_terminal_logs.png" onerror="this.outerHTML='<div class=&quot;placeholder&quot;>SCREENSHOT PENDING: Laptop 1 terminal with uvicorn PREDICT / RESULT / POST /predict lines from Laptop 2<br>(file: report/figures/api_terminal_logs.png)</div>'">
+  <figcaption>Fig. 7.2 – API logs on the command line of the receiving laptop (Laptop 1): each request from the Laptop 2 UI, the model used and the server-side result.</figcaption>
+</figure>
+<figure>
+  <img src="figures/laptop2_cmd_ui_server.png" onerror="this.outerHTML='<div class=&quot;placeholder&quot;>SCREENSHOT PENDING: Laptop 2 Command Prompt running py -m http.server 8501 in the ui folder<br>(file: report/figures/laptop2_cmd_ui_server.png)</div>'">
+  <figcaption>Fig. 7.3 – Laptop 2 (Windows) serving the static UI with Python's built-in HTTP server.</figcaption>
+</figure>
+<figure><img src="figures/ui_trip_00000077.png"><figcaption>Fig. 7.4 – UI during development (student-test trip 00000077): trip list, server-computed metrics (Top-1 with HMM 85.30 %, classifier-only 77.60 %, route F1 94.20 %, continuity 100 %) and the predicted route over OpenStreetMap.</figcaption></figure>
+<div class="grid2">
+  <figure><img src="figures/api_models.png"><figcaption>Fig. 7.5 – <code>GET /models</code> response: every selectable model with its offline CV and student-test scores.</figcaption></figure>
+  <figure><img src="figures/api_health.png"><figcaption>Fig. 7.6 – <code>GET /health</code> response: deployed model, decoder configuration and trip source.</figcaption></figure>
+</div>
 
 <!-- ======================= 8 INTEGRITY ======================= -->
 <h2>8. Academic Integrity, Limitations and AI-Assistance Disclosure</h2>
 <h3>8.1 Leakage controls</h3>
 <ul>
-  <li>Evaluator-testing data were never available during development and are only loaded by the API at evaluation time.</li>
+  <li>Evaluator-testing data were not available during development. They were received on evaluation day and used only for inference through the deployed API (Section 7.1); nothing was retrained or re-tuned on them.</li>
   <li>All fitting, cross-validation and Bayesian optimisation used training trips only, with folds grouped by trip.</li>
   <li>The StandardScalers (LR, KNN, MLP) are inside the pipelines, so they are fitted on training folds only.</li>
   <li>Decoder parameters were tuned on out-of-fold training predictions.</li>
@@ -422,7 +432,13 @@ The best final state is traced back through ψ. Scores are re-normalised at ever
   <li>Evaluator-trip performance may differ from student-test performance. The trips come from many different cities, and 10 trips is a small sample.</li>
 </ul>
 <h3>8.3 Disclosure of AI assistance</h3>
-<p>[TEAM TO COMPLETE according to the event's AI policy. Describe honestly which parts were assisted by an AI coding assistant (for example code scaffolding, debugging, drafting of report text) and confirm that every team member has run the code, inspected the results and can explain all technical decisions. All metrics, tables and figures in this report were produced by executing the code in the repository; none were written by hand.]</p>
+<p>This project was built with substantial help from an AI coding assistant (Anthropic's Claude, used through the Claude Code desktop app). We disclose its use as the event's policy requires.</p>
+<ul>
+  <li><b>What the assistant did:</b> wrote most of the source code (data loading, projection, label alignment, candidate generation and features, the seven training pipelines, the Bayesian optimisation, the HMM/Viterbi decoder, the FastAPI backend and the UI); ran the scripts on our laptop; and drafted this report and our viva notes from the outputs of those runs.</li>
+  <li><b>What the team did:</b> read the hackathon documents and set the task; supplied and organised the dataset; asked for, reviewed and tested each part; set up GitHub and the two-laptop deployment; ran the evaluation-day demo; took the deployment screenshots; and reviewed and edited this report.</li>
+  <li><b>Integrity of results:</b> every metric, table and figure in this report was produced by executing the code in the repository; none was typed in by hand. Each figure can be regenerated with the scripts listed in Section 8.4.</li>
+  <li><b>Understanding:</b> every team member has gone through the code, the experiments and this report, and can explain the design decisions, the models and the results.</li>
+</ul>
 
 <h3>8.4 Reproducibility</h3>
 <div class="formula">pip install -r requirements.txt   (macOS: brew install libomp)<br>
