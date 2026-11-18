@@ -104,9 +104,11 @@ background stays blank.
 
 Open `http://localhost:8501/?api=http://<LAPTOP1_IP>:8000`, or type the API URL in the
 header and press **Connect**. The page lists the evaluation trips. Clicking one runs
-`POST /compare` (all models ranked), then `POST /predict` for the best model, and draws
-the GPS points and the predicted route, along with the accuracy that the API computed
-on the server.
+`POST /predict` with the deployed model (tuned XGBoost + HMM) and draws the GPS points
+and the predicted route, with the accuracy the API computed on the server. It also calls
+`POST /compare` and shows every model's score on that trip **for comparison only**. That
+ranking is scored against the reference route, so it never chooses which prediction is
+displayed.
 
 API endpoints:
 

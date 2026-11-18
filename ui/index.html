@@ -378,11 +378,13 @@
         }
         if (seq !== runSeq) return;
 
+        // The map and headline metrics ALWAYS come from the deployed model (no "model"
+        // field -> server default: tuned XGBoost + HMM). The /compare ranking above is
+        // scored against the trip's reference route, so it is shown for comparison only
+        // and must never decide which prediction is displayed (that would use the
+        // evaluator labels to pick the answer).
         const body = { trip_id: id, use_hmm: true };
-        if (best) body.model = best.model_id;
-        setStatus(
-          `Drawing best route${best ? ` (${modelLabel(best)})` : ""} …`,
-        );
+        setStatus(`Running the deployed model on trip ${id} …`);
         const t0 = performance.now();
         try {
           const d = await postJson("/predict", body);
@@ -390,13 +392,14 @@
           draw(d);
           showMetrics(d, (performance.now() - t0) / 1000);
           setStatus(
-            `Trip ${id} · ${d.model}${best ? ` · ${pct(best.top1_accuracy_hmm)} top-1` : ""}.`,
+            `Trip ${id} · ${d.model} · ${pct(d.metrics.top1_accuracy_hmm)} top-1.`,
           );
         } catch (e) {
           if (seq === runSeq) setStatus("Error: " + e.message);
         }
       }
 
+      const DEPLOYED = "xgboost_tuned";
       function renderCompare(d, best) {
         const models = (d.models || [])
           .filter((m) => m.available !== false)
@@ -408,7 +411,7 @@
           .map(
             (
               m,
-            ) => `<tr class="${best && m.model_id === best.model_id ? "sel" : ""}" title="${m.family} — classifier-only ${pct(m.top1_accuracy_classifier_only)}">
+            ) => `<tr class="${m.model_id === DEPLOYED ? "sel" : ""}" title="${m.family} — classifier-only ${pct(m.top1_accuracy_classifier_only)}">
       <td>${modelLabel(m)}</td>
       <td>${pct(m.top1_accuracy_hmm)}</td>
       <td>${pct(m.route_f1)}</td>
@@ -422,7 +425,7 @@
       <tbody>${rows}</tbody>
     </table>
     <div class="cmp-note">
-      Ranked by HMM top-1${best ? ` — best: <b>${modelLabel(best)}</b> (${pct(best.top1_accuracy_hmm)})` : ""}, drawn on the map.
+      For comparison only: every model scored on this trip (ranked by HMM top-1). The map always shows the deployed model, <b>XGBoost (tuned)</b>; this ranking never picks the prediction.
     </div>`;
         $("#compareWrap").hidden = false;
       }
