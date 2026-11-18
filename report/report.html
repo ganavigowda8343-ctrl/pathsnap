@@ -71,7 +71,7 @@ carriageway. PathSnap reconstructs the road segments actually travelled. For eve
   <tr><th>Partition</th><th class="n">Trips</th><th class="n">GPS points</th><th>Used for</th></tr>
   <tr><td>Training</td><td class="n">80 (78 used for fitting)</td><td class="n">208,417</td><td>EDA, feature design, model fitting, 5-fold GroupKFold CV, Bayesian optimisation, HMM-parameter tuning (out-of-fold)</td></tr>
   <tr><td>Student testing</td><td class="n">10</td><td class="n">19,160</td><td>Development-stage model comparison and the classifier-vs-HMM comparison only</td></tr>
-  <tr><td>Evaluator testing</td><td class="n">10</td><td class="n">–</td><td>Not available to us and never used; only loaded by the API on evaluation day</td></tr>
+  <tr><td>Evaluator testing</td><td class="n">10</td><td class="n">19,674</td><td>Received only on evaluation day, after all development was finished. Used only for final inference through the API; never used for training, tuning, feature or model selection (Section 7.1)</td></tr>
 </table>
 
 <!-- ======================= 2 EDA ======================= -->
@@ -364,7 +364,8 @@ The best final state is traced back through ψ. Scores are re-normalised at ever
   <li><b>On start-up</b> it loads <code>models/final_model.joblib</code> and <code>configs/hmm_config.json</code>.</li>
   <li><code>GET /health</code> reports the model, the decoder configuration and the trip source.</li>
   <li><code>GET /trips</code> lists trip ids only.</li>
-  <li><code>POST /predict {"trip_id"}</code> runs the full pipeline: load → candidates → features → XGBoost → Viterbi → gap filling. Only then does it read the reference route, server-side, to compute accuracy.</li>
+  <li><code>GET /models</code> lists every selectable model: the deployed tuned XGBoost plus the 7 models compared in Section 3, refit by <code>scripts/08_export_model_zoo.py</code>, with their offline CV and student-test scores.</li>
+  <li><code>POST /predict {"trip_id", "model"?, "use_hmm"?}</code> runs the full pipeline (default model: the tuned XGBoost, with the HMM on). <code>POST /compare {"trip_id"}</code> runs every model on one trip, computing the features once, and ranks them. The HMM parameters tuned for XGBoost are reused for every model. Each run of the pipeline: load → candidates → features → XGBoost → Viterbi → gap filling. Only then does it read the reference route, server-side, to compute accuracy.</li>
   <li><b>Response:</b> GPS points, the predicted-route polylines, metrics and timings. The reference geometry is never sent.</li>
   <li><b>Safety:</b> trip ids are validated against the directory listing, which also blocks path traversal.</li>
   <li><b>Logs:</b> every request is logged (<code>PREDICT …</code> / <code>RESULT …</code>).</li>
@@ -372,6 +373,28 @@ The best final state is traced back through ψ. Scores are re-normalised at ever
 </ul>
 <p><b>Laptop 2 – evaluator UI</b> (<code>ui/index.html</code>, served with <code>python -m http.server 8501</code>): a single-page Leaflet application. It lists the trips returned by the API. Clicking a trip sends its id to <code>/predict</code>, then the page draws the GPS points and the predicted route and shows the server-computed metrics.</p>
 <p>Processing time per student-test trip is 0.05–0.62 s (median ≈ 0.27 s).</p>
+<h3>7.1 Evaluation-day run (10 evaluator trips)</h3>
+<p>The evaluator trips were run through the unchanged deployed pipeline (tuned XGBoost + HMM + gap filling) via <code>POST /predict</code>. Nothing was retrained or re-tuned afterwards.</p>
+<ul>
+  <li>All 10 trips processed in 0.09–0.79 s each.</li>
+  <li>Top-1 accuracy: 91.8 % classifier-only → <b>95.1 %</b> with the HMM (mean over trips); 86.5 % → <b>94.3 %</b> pooled over all 19,673 labelled points.</li>
+  <li>Mean route F1 93.6 %; route continuity 100 % on every trip.</li>
+  <li>The HMM improved every trip. The largest gain was trip 00000015, from 70.5 % to 90.2 %.</li>
+  <li>Route precision was lowest on trips 00000015 and 00000023 (65 %, with recall above 98 %). This is the known cost of shortest-path gap filling (Section 5).</li>
+</ul>
+<table>
+  <tr><th>Trip</th><th class="n">Points</th><th class="n">Top-1 classifier</th><th class="n">Top-1 HMM</th><th class="n">Route F1</th></tr>
+  <tr><td>00000015</td><td class="n">6,854</td><td class="n">0.7049</td><td class="n">0.9022</td><td class="n">0.7836</td></tr>
+  <tr><td>00000017</td><td class="n">1,346</td><td class="n">0.9361</td><td class="n">0.9458</td><td class="n">0.9367</td></tr>
+  <tr><td>00000023</td><td class="n">458</td><td class="n">0.9432</td><td class="n">0.9541</td><td class="n">0.7785</td></tr>
+  <tr><td>00000030</td><td class="n">654</td><td class="n">0.8073</td><td class="n">0.8364</td><td class="n">0.9442</td></tr>
+  <tr><td>00000049</td><td class="n">2,642</td><td class="n">0.9928</td><td class="n">1.0000</td><td class="n">0.9988</td></tr>
+  <tr><td>00000059</td><td class="n">1,031</td><td class="n">0.9699</td><td class="n">0.9777</td><td class="n">0.9559</td></tr>
+  <tr><td>00000067</td><td class="n">916</td><td class="n">0.9509</td><td class="n">0.9596</td><td class="n">0.9878</td></tr>
+  <tr><td>00000073</td><td class="n">1,144</td><td class="n">0.9825</td><td class="n">0.9851</td><td class="n">0.9937</td></tr>
+  <tr><td>00000087</td><td class="n">1,399</td><td class="n">0.9557</td><td class="n">0.9964</td><td class="n">0.9989</td></tr>
+  <tr><td>00000094</td><td class="n">3,230</td><td class="n">0.9325</td><td class="n">0.9492</td><td class="n">0.9805</td></tr>
+</table>
 <figure><img src="figures/ui_trip_00000077.png"><figcaption>Fig. 7.1 – Working UI: trip list, server-computed metrics (Top-1 with HMM 85.30 %, classifier-only 77.60 %, route F1 94.20 %, continuity 100 %) and predicted route over OpenStreetMap.</figcaption></figure>
 <figure><img src="figures/ui_trip_00000056.png"><figcaption>Fig. 7.2 – UI for student-test trip 00000056.</figcaption></figure>
 <figure>
